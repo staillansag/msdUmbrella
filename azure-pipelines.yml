@@ -124,3 +124,52 @@ stages:
         done
       displayName: 'Check health of pods'
 
+- stage: Test
+  dependsOn: Deploy
+  condition: succeeded('Deploy')
+
+  jobs:
+
+  - job: TestAPI
+
+    steps:
+
+    - script: |
+        AUTH_HEADER=$(echo -n "Administrator:${SAG_MSR_ADMIN_PASSWORD}" | base64)
+        echo "##vso[task.setvariable variable=AUTH_HEADER]${AUTH_HEADER}"
+      displayName: 'Set basic auth header'
+      env:
+        SAG_MSR_ADMIN_PASSWORD: $(SAG_MSR_ADMIN_PASSWORD)
+
+# Note: basic auth isn't used if the microgateway is deployed, but we keep it here as a convenience to simplify the code
+    - script: |
+        URL='https://msd-umbrella.sttlab.eu:443/orders-api/orders'
+        RESPONSE=$(curl -s --location --request POST ${URL} \
+          --header 'Authorization: Basic '${AUTH_HEADER} \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+            "customerId": "789e4567-e89b-12d3-a456-426655441111",
+            "customerEmail": "msdemo@grr.la",
+            "totalAmount": "199.98",
+            "currencyCode": "USD",
+            "paymentMethod": "CreditCard",
+            "orderItems": [
+              {
+                "itemId": "321e4567-e89b-12d3-a456-426655442222",
+                "quantity": 2,
+                "amount": "99.99",
+                "currencyCode": "USD"
+              }
+            ]
+          }
+          '
+        echo "API root URL: ${URL}"
+        echo "POST /orders-api/orders"
+        echo "${RESPONSE}"
+        ID_ORDER=$(echo "${RESPONSE}" | jq -r '.orderId')
+        if [ "${ID_ORDER}" = "null" ] || [ -z "${ID_ORDER}" ]; then
+          echo "POST /orders-api/orders --> ERROR (Invalid orderId in response: ${ID_ORDER})" && exit 1
+        fi
+        echo "##vso[task.setvariable variable=ID_ORDER]${ID_ORDER}"
+      displayName: 'POST /orders-api/orders'    
+
