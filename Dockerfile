@@ -2,7 +2,7 @@
 # This is to show that we can tune the granularity of microservice images and group together multiple packages if we want
 # But in a state of the art microservice architecture we'd probably split all this into multiple autonomous microservices
 
-FROM staillansag/webmethods-microservicesruntime:10.15.7-msdemo
+FROM staillansag/webmethods-microservicesruntime:10.15.8-msdemo
 
 ARG GIT_TOKEN
 ENV GIT_TOKEN=$GIT_TOKEN
