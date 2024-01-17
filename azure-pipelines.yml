@@ -1,0 +1,124 @@
+pool:
+  name: Default
+
+variables:
+  - group: aks.variables
+  - group: azure.variables
+  - group: msd.umbrella.variables
+  - group: environment.variables
+  - group: sag.variables
+ 
+stages:
+
+- stage: Build
+  condition: or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'BatchedCI'))
+
+  jobs:
+
+  - job: BuildImage
+
+    variables:
+    - name: MAJOR
+      value: $[variables['IMAGE_MAJOR_VERSION']]
+    - name: MINOR
+      value: $[variables['IMAGE_MINOR_VERSION']]
+    - name: VERSION_PREFIX
+      value: $(IMAGE_TAG_BASE):$(MAJOR).$(MINOR)
+    - name: PATCH
+      value: $[counter(variables['VERSION_PREFIX'], 1)]
+    - name: VERSION
+      value: $(VERSION_PREFIX).$(PATCH)
+
+    steps:
+
+    - script: |
+        echo "Building ${VERSION}"
+        docker build -t "${VERSION}" . || exit 1
+      displayName: "Build new image"
+
+    - script: |
+        echo "Tagging ${IMAGE_TAG_BASE}:latest"
+        docker tag "${VERSION}" "${IMAGE_TAG_BASE}:latest" || exit 1
+      displayName: "Apply latest tag to new image"
+
+    - script: |
+        docker login -u "${DOCKER_REGISTRY_ID}" -p "${DOCKER_REGISTRY_SECRET}" "${DOCKER_REGISTRY_URI}" || exit 1
+      displayName: 'Login to image registry'
+      env:
+        DOCKER_REGISTRY_SECRET: $(DOCKER_REGISTRY_SECRET)
+
+    - script: |
+        docker push "${VERSION}" || exit 1
+      displayName: 'Push new image'
+
+    - script: |
+        docker push "${IMAGE_TAG_BASE}:latest" || exit 1
+      displayName: 'Push new image (latest)'
+
+
+- stage: Deploy
+  dependsOn: Build
+  condition: or(succeeded(), eq(dependencies.Build.result, 'skipped'))
+
+  jobs:
+
+  - job: DeployKubernetes
+
+    steps:
+
+    - script: |
+        az login --service-principal -u ${AZ_SP_ID} -p ${AZ_SP_SECRET} --tenant ${AZ_TENANT_ID}
+      displayName: 'Login to Azure with service principal'
+      env:
+        AZ_SP_SECRET: $(AZ_SP_SECRET)
+
+    - script: |
+        if [ "${AZ_SANDBOX_MODE}" = "true" ]; then
+          AKS_RESOURCE_GROUP=$(az group list --query "[0].name" --output tsv)
+          echo "##vso[task.setvariable variable=AKS_RESOURCE_GROUP]${AKS_RESOURCE_GROUP}"
+        fi
+      displayName: 'Fetch sandbox resource group'
+
+    - script: |
+        az aks get-credentials --resource-group ${AKS_RESOURCE_GROUP} --name ${AKS_CLUSTER_NAME} --overwrite-existing
+      displayName: 'Fetch kube config'
+
+    - script: |
+        kubectl apply -f ./resources/kubernetes/cm-msd-umbrella.yaml
+      displayName: 'Apply properties config map'
+
+    - script: |
+        kubectl apply -f ./resources/kubernetes/service-msd-umbrella.yaml
+      displayName: 'Apply service'
+
+    - script: |
+        sed 's/MICROSERVICE_DEPLOYMENT_ID/'${BUILD_BUILDID}'/g' ./resources/kubernetes/deploy-msd-umbrella.yaml | kubectl apply -f -
+      displayName: 'Apply deployment'
+
+    - script: |
+        kubectl rollout status deployment msd-umbrella --timeout=5m 
+      displayName: 'Wait for end of deployment'
+
+    - script: |
+        sleep 60
+        PODS=$(kubectl get pods --selector=app=msd-umbrella -o jsonpath='{.items[*].metadata.name}')
+        for POD in $PODS; do
+          health_json=$(kubectl exec $POD --container msr -- curl -s http://localhost:5555/health)
+          if [ -z "${health_json}" ]; then
+            echo "Empty response to http://localhost:5555/health for pod ${POD}" && exit 1
+          else
+            echo "Health status for pod ${POD}"
+            echo ${health_json}
+          fi
+          status_checks=$(echo "$health_json" | jq '. | .. | .status? // empty | select(. != "UP")')
+          if [[ -n "$status_checks" ]]; then
+            echo "Error: One or more resources in $POD are not 'UP'" && exit 1
+          fi
+          jdbc_state_checks=$(echo "$health_json" | jq '.Adapters.JDBCAdapter.Connections[] | select(.state == "suspended")')
+          if [[ -n "$jdbc_state_checks" ]]; then
+            echo "Error: One or more JDBC Adapter connections in $POD are suspended"
+            exit 1
+          fi
+        done
+      displayName: 'Check health of pods'
+
