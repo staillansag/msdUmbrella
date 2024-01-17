@@ -33,8 +33,10 @@ stages:
 
     - script: |
         echo "Building ${VERSION}"
-        docker build -t "${VERSION}" . || exit 1
+        docker build --build-arg GIT_TOKEN=$(GIT_TOKEN) -t "${VERSION}" . || exit 1
       displayName: "Build new image"
+      env:
+        GIT_TOKEN: $(GIT_TOKEN)
 
     - script: |
         echo "Tagging ${IMAGE_TAG_BASE}:latest"
