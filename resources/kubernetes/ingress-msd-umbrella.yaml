@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: msd-umbrella
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "msd-umbrella.sttlab.eu"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: msd-umbrella
+            port: 
+              number: 80
+  tls:
+  - hosts: 
+    - msd-umbrella.sttlab.eu
+    secretName: aks-tls

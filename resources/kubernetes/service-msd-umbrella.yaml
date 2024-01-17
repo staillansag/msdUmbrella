@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: msd-umbrella
+  labels:
+    name: msd-umbrella
+    app: msd-umbrella
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 5555
+    name: http
+  - port: 443
+    targetPort: 5543
+    name: https
+  selector:
+    app: msd-umbrella

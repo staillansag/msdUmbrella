@@ -1,0 +1,37 @@
+# application.properties used to configure the development MSR
+# Replace the "xxx" mentions with real configuration values (applies in particular to the SMT server config)
+# JDBC, JNDI and JMS config can be left unchanged if you use the provided docker-compose.yml to run the development stack
+
+artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionEnabled=true
+artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.datasourceClass=org.postgresql.ds.PGSimpleDataSource
+artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.databaseName=postgres
+artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.portNumber=5432
+artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.serverName=postgresql
+artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.transactionType=LOCAL_TRANSACTION
+artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.user=postgres
+artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.password=Password123@
+artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionManagerSettings.maximumPoolSize=10
+
+jndi.DEFAULT_IS_JNDI_PROVIDER.providerURL=nsp://umserver:9000
+jms.DEFAULT_IS_JMS_CONNECTION.clientID=DEFAULT_IS_JMS_CLIENT
+jms.DEFAULT_IS_JMS_CONNECTION.enabled=true
+jms.DEFAULT_IS_JMS_CONNECTION.csqSize=0
+jms.DEFAULT_IS_JMS_CONNECTION.jndi_jndiAliasName=DEFAULT_IS_JNDI_PROVIDER
+jms.DEFAULT_IS_JMS_CONNECTION.jndi_automaticallyCreateUMAdminObjects=true
+jms.DEFAULT_IS_JMS_CONNECTION.producerMaxRetryAttempts=30
+jms.DEFAULT_IS_JMS_CONNECTION.producerRetryInterval=1000
+
+globalvariable.SMTP_SERVERNAME.value=xxx
+globalvariable.SMTP_PORT.value=xxx
+globalvariable.SMTP_AUTH_USERNAME.value=xxx
+globalvariable.SMTP_AUTH_PASSWORD.value=xxx
+globalvariable.SMTP_AUTH_PASSWORD.isSecure=true
+globalvariable.SMTP_TRUSTSTORE_ALIAS.value=DEFAULT_JVM_TRUSTSTORE
+
+settings.watt.net.default.accept=application/json
+settings.watt.server.ns.lockingMode=none
+
+user.Administrator.password=manage
+
+globalvariable.SERVER.value=docker
+

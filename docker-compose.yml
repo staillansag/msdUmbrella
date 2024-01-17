@@ -1,0 +1,57 @@
+version: '3.4'
+
+services:
+  postgresql:
+    image: postgres:latest
+    container_name: postgresql
+    networks:
+      - sag
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=Password123@
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=wm
+    volumes:
+      - postgres-volume:/var/lib/postgresql/data
+
+  umserver:
+    image: softwareag/universalmessaging-server:10.15
+    container_name: umserver
+    networks:
+      - sag
+    ports:
+      - "9000:9000"
+      - "9200:9200"
+    volumes:
+      - um-data-volume:/opt/softwareag/UniversalMessaging/server/umserver/data
+      - um-conf-volume:/opt/softwareag/common/conf
+      - ./license/um-license.xml:/opt/softwareag/UniversalMessaging/server/umserver/licence/licence.xml:ro
+    healthcheck:
+      interval: 5s
+      retries: 12
+      test: ["CMD-SHELL", "curl --silent http://localhost:9000/health/ | grep -q '\"ServerStatus\":\"OK\"'"]
+
+  msdemo:
+    container_name: msdemo
+    image: staillansag/webmethods-microservicesruntime:10.15.7-msdemo
+    depends_on:
+      - umserver
+      - postgresql
+    networks:
+      - sag
+    ports:
+      - "15555:5555"
+    volumes:
+      - ./license/msr-license.xml:/opt/softwareag/IntegrationServer/config/licenseKey.xml:ro
+      - ./application.properties:/opt/softwareag/IntegrationServer/application.properties
+      - ../msdOrders:/opt/softwareag/IntegrationServer/packages/msdOrders
+      - ../msdNotifications:/opt/softwareag/IntegrationServer/packages/msdNotifications
+
+networks:
+  sag:
+
+volumes:
+  postgres-volume:
+  um-data-volume:
+  um-conf-volume:

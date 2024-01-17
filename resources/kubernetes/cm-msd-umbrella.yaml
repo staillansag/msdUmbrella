@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: msd-umbrella
+data:
+  application.properties: |
+    artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionEnabled=true
+    artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.datasourceClass=org.postgresql.ds.PGSimpleDataSource
+    artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.databaseName=$env{RDS_DATABASE_NAME}
+    artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.portNumber=$env{RDS_PORT}
+    artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.serverName=$env{RDS_SERVER_NAME}
+    artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.transactionType=LOCAL_TRANSACTION
+    artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.user=$env{RDS_USER_NAME}
+    artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.password=$secret{DB_PASSWORD}
+    artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionManagerSettings.maximumPoolSize=10
+
+    jndi.DEFAULT_IS_JNDI_PROVIDER.providerURL=nsp://umserver-0:9000
+    jms.DEFAULT_IS_JMS_CONNECTION.clientID=DEFAULT_IS_JMS_CLIENT
+    jms.DEFAULT_IS_JMS_CONNECTION.enabled=true
+    jms.DEFAULT_IS_JMS_CONNECTION.csqSize=0
+    jms.DEFAULT_IS_JMS_CONNECTION.jndi_jndiAliasName=DEFAULT_IS_JNDI_PROVIDER
+    jms.DEFAULT_IS_JMS_CONNECTION.jndi_automaticallyCreateUMAdminObjects=true
+    jms.DEFAULT_IS_JMS_CONNECTION.producerMaxRetryAttempts=60
+    jms.DEFAULT_IS_JMS_CONNECTION.producerRetryInterval=1000
+
+    globalvariable.SMTP_SERVERNAME.value=$env{SMTP_SERVERNAME}
+    globalvariable.SMTP_PORT.value=$env{SMTP_PORT}
+    globalvariable.SMTP_AUTH_USERNAME.value=$env{SMTP_AUTH_USERNAME}
+    globalvariable.SMTP_AUTH_PASSWORD.value=$secret{SMTP_AUTH_PASSWORD}
+    globalvariable.SMTP_AUTH_PASSWORD.isSecure=true
+    globalvariable.SMTP_TRUSTSTORE_ALIAS.value=$env{SMTP_TRUSTSTORE_ALIAS}
+
+    globalvariable.SERVER.value=$env{SERVER}
+
+    settings.watt.net.default.accept=application/json
+    settings.watt.server.ns.lockingMode=none
+    settings.watt.server.saveConfigFiles=false 
+    settings.watt.server.audit.logFilesToKeep=1
+    settings.watt.server.serverlogFilesToKeep=1
+    settings.watt.server.stats.logFilesToKeep=1
+    settings.watt.server.pipeline.processor=false
+    statisticsdatacollector.monitorConfig.enabled=false
+
+    user.Administrator.password=$secret{ADMIN_PASSWORD}
+
+    settings.watt.net.default.accept=application/json
+    settings.watt.server.ns.lockingMode=none
+
+    user.Administrator.password=manage
+
+    globalvariable.SERVER.value=$env{SERVER}
+
+
+  applicationFile.properties:  |
