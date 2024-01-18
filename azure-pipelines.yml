@@ -11,7 +11,6 @@ variables:
 stages:
 
 - stage: Build
-  condition: or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'BatchedCI'))
 
   jobs:
 
