@@ -3,9 +3,9 @@ kind: Ingress
 metadata:
   name: msd-umbrella
   annotations:
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
+  spec.ingressClassName: nginx
   rules:
   - host: "msd-umbrella.sttlab.eu"
     http:
