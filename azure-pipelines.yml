@@ -97,6 +97,10 @@ stages:
       displayName: 'Apply ingress'
 
     - script: |
+        kubectl apply -f ./resources/kubernetes/hpa-msd-umbrella.yaml
+      displayName: 'Apply hpa'
+
+    - script: |
         sed 's/MICROSERVICE_DEPLOYMENT_ID/'${BUILD_BUILDID}'/g' ./resources/kubernetes/deploy-msd-umbrella.yaml | kubectl apply -f -
       displayName: 'Apply deployment'
 
