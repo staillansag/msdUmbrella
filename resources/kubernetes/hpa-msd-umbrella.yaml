@@ -5,9 +5,9 @@ metadata:
 spec:
   scaleTargetRef:
     kind: Deployment
-    name: msr-frontend
+    name: msd-umbrella
     apiVersion: apps/v1
-  minReplicas: 2
+  minReplicas: 1
   maxReplicas: 3
   metrics:
     - type: Resource

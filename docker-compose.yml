@@ -47,6 +47,7 @@ services:
       - ./application.properties:/opt/softwareag/IntegrationServer/application.properties
       - ../msdOrders:/opt/softwareag/IntegrationServer/packages/msdOrders
       - ../msdNotifications:/opt/softwareag/IntegrationServer/packages/msdNotifications
+      - ../msdPerformance:/opt/softwareag/IntegrationServer/packages/msdPerformance
 
 networks:
   sag:
