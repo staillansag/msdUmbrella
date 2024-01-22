@@ -16,6 +16,7 @@ USER sagadmin
 RUN /opt/softwareag/wpm/bin/wpm.sh install -u staillansag -p $GIT_TOKEN -r https://github.com/staillansag -d /opt/softwareag/IntegrationServer msdOrders
 RUN /opt/softwareag/wpm/bin/wpm.sh install -u staillansag -p $GIT_TOKEN -r https://github.com/staillansag -d /opt/softwareag/IntegrationServer msdNotifications
 RUN /opt/softwareag/wpm/bin/wpm.sh install -u staillansag -p $GIT_TOKEN -r https://github.com/staillansag -d /opt/softwareag/IntegrationServer msdPerformance
+RUN /opt/softwareag/IntegrationServer/bin/jcode.sh makeall msdPerformance
 
 # Make authorizations compliant with OpenShift
 USER root
