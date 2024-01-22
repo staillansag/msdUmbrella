@@ -32,7 +32,7 @@ stages:
 
     - script: |
         echo "Building ${VERSION}"
-        docker build --build-arg GIT_TOKEN=$(GIT_TOKEN) -t "${VERSION}" . || exit 1
+        docker build --no-cache --build-arg GIT_TOKEN=$(GIT_TOKEN) -t "${VERSION}" . || exit 1
       displayName: "Build new image"
       env:
         GIT_TOKEN: $(GIT_TOKEN)
