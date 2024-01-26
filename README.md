@@ -46,7 +46,7 @@ git clone https://github.com/staillansag/msdOrders.git
 git clone https://github.com/staillansag/msdNotifications.git
 git clone https://github.com/staillansag/msdPerformance.git
 ```
-6.  Démarrer le stack Docker Compose: `docker compose up -d` (dans certains environnements, ce sera docker-compose) et vérifier l'output, qui doit ressembler à ceci:
+6.  Retourner dans msdUmbrella et démarrer le stack Docker Compose: `docker compose up -d` (dans certains environnements, ce sera docker-compose) et vérifier l'output, qui doit ressembler à ceci:
 ```
 msdUmbrella % docker compose up -d
 [+] Running 4/4
@@ -57,9 +57,9 @@ msdUmbrella % docker compose up -d
 ```
 7.  Docker expose le MSR au port 15555, il faut donc connecter le Designer sur ce port (par défaut, le user est Administrator et le mdp est manage)
 
-Pour arrêter le stack docker: `docker compose down`
-Pour consulter les logs du MSR (server.log): `docker log msrdemo`
-Pour se connecter au conteneur MSR: `docker exec -it msrdemo sh`
+Pour arrêter le stack docker: `docker compose down`  
+Pour consulter les logs du MSR (server.log): `docker log msrdemo`  
+Pour se connecter au conteneur MSR: `docker exec -it msrdemo sh`  
 
 Pas besoin de gérer la création des connection factories, queues et topics UM. Dans application.properties, le paramètre `jms.DEFAULT_IS_JMS_CONNECTION.jndi_automaticallyCreateUMAdminObjects=true` indique au MSR qu'il doit les créer lui-même automatiquement.  
 
