@@ -64,4 +64,75 @@ Pour se connecter au conteneur MSR: `docker exec -it msrdemo sh`
 Pas besoin de gérer la création des connection factories, queues et topics UM. Dans application.properties, le paramètre `jms.DEFAULT_IS_JMS_CONNECTION.jndi_automaticallyCreateUMAdminObjects=true` indique au MSR qu'il doit les créer lui-même automatiquement.  
 
 
-##  Déploiement d'un "macroservice"
+##  Build manuel du "macroservice"
+
+Un Dockerfile est fournit dans le repository.  
+Le build s'appuie sur wpm (webMethods Package Manager) pour installer les packages msdOrders, msdNotification et msdPerformance depuis les repositories Github.  
+Même si les repositories de ces packages sont publics, j'utilise un personal access token Github pour expliquer le fonctionnemnt avec des repositories privés. je passe un argument GIT_TOKEN lors du build Docker, et je mappe dans le Dockerfile cet argument avec une variable d'environnement que j'utilise niveau wpm.
+
+Commande de build Docker: `docker build --build-arg GIT_TOKEN=<git-token> -t <nom-image>` 
+
+
+##  Déploiement manuel du "macroservice" dans Kubernetes
+
+Dans le repertoire resources/kubernetes du repository, on trouve un ensemble de descripteurs Kubernetes.  
+Dans tout ceci, je considère l'UM comme un composant d'infrastructure, qui ne fait pas partie d'une livraison applicative. Les descripteurs de déploiement de l'UM sont ici: `https://github.com/staillansag/wm-config/tree/main/aks/umserver`
+
+
+### cm-msd-umbrella.yaml
+
+Contient le fichier application.properties, dans lequel on trouve divers placeholders (par exemple $env{RDS_DATABASE_NAME} ou $secret{DB_PASSWORD})  
+Les placeholders $env{*} sont associés à une ConfigMap qui doit être créée par ailleurs.  
+Les placeholders $secret{*}) sont associés à un Secret qui doit être créée par ailleurs.  
+
+### deploy-msd-umbrella.yaml
+
+Spécifie le déploiement des pods.  
+Injecte les variables d'environnement de la ConfigMap environment-config et les secrets provenant du Secret environment-secret.
+
+##  service-msd-umbrella.yaml
+
+Spécifie un service de type ClusterIP pointant vers les pods, et mappant les ports 5555 et 5543 des pods avec les ports 80 et 443 en sortie.
+
+##  ingress-msd-umbrella.yaml
+
+Spécifie un ingress qui gère la terminaison TLS et le routage vers le service ClusterIP.  
+Je gère ici mon propre nom de domaine msd-umbrella.sttlab.eu, qui est associé automatiquement à l'IP du contrôleur d'Ingress:
+-   msd-umbrella.sttlab.eu est mappé avec un hostname sttaks.sttlab.eu de manière statique (entrée DNS de type CNAME)
+-   sttaks.sttlab.eu est mappé dynamiquement avec l'IP du contrôleur d'ingress, et cette configuration est gérée au niveau du cluster, pas au niveau applicatif (non visible ici donc)
+
+##  hpa-msd-umbrella.yaml
+
+Spécifie un "horizontal pod autoscaler" pour ajuster dynamiquement le nombre de pods en fonction de la charge (élasticité.)
+
+##  cm-environment.yaml.example
+
+Exemple de ConfigMap contenant les différentes variables d'environnement.
+
+##  secret-environment.yaml.example
+
+Example de Secret contenant les variables d'environnement ayant un caractère confidentiel.
+
+##  secret-licenses.yaml.example
+
+Exemple de Secret contenant les licenses UM et MSR.
+
+##  CI/CD avec Azure Pipelines
+
+Un exemple de pipeline est fournit dans azure-pipelines.yml avec:
+-   un job de build de l'image et de push dans Docker hub
+-   un job de déploiement dans Kubernetes
+-   un job de smoke tests
+
+Concernant le déploiement dans Kubernetes, je part du principe que la ConfigMap environment-config et les Secrets environment-secret et licenses sont des assets d'infrastructure qui existent déjà sur le cluster et ne font pas partie de la livraison applicative.  
+Mais d'autres approches peuvent être envisagées à ce niveau. On pourrait par exemple re-créer ces objets à chaque livraison en repartant des variable groups Azure Pipelines (et en mappant avec un vault si nécessaire.)
+
+
+##  Monitoring avec Prometheus et Grafana
+
+Le MSR expose des métriques prometheus sur le endpoint /metrics via le port 5555.  
+L'UM expose ses métriques sur le endpoint /metrics via le port 9200.  
+
+Des dashboard Grafana sont fournis dans resources/monitoring, un pour l'UM et un autre pour le MSR.  
+Les descripteurs de déploiement de Prometheus et Grafana, ainsi que les règles de scrapping sont spécifiées ici: `https://github.com/staillansag/wm-config/tree/main/aks/monitoring`
+

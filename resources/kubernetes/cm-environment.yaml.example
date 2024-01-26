@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: environment-config
+data:
+  RDS_DATABASE_NAME: <Database name>
+  RDS_PORT: <Database port>
+  RDS_SERVER_NAME: <Database server name>
+  RDS_USER_NAME: <Database user>
+  SMTP_AUTH_USERNAME: <SMTP username>
+  SMTP_PORT: <SMTP port>
+  SMTP_SERVERNAME: <SMTP servername>
+  SMTP_TRUSTSTORE_ALIAS: DEFAULT_JVM_TRUSTSTORE
