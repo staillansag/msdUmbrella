@@ -6,7 +6,9 @@ Ce repository "chapeaute" les packages de la démo microservices webMethods:
 -   https://github.com/staillansag/msdPerformance pour le microservice performance
 
 Dans une approche microservice, on va chercher à gérer une image pour chaque microservice. Chaque conteneur de microservice tournera sur un MSR dédié.
-Mais on peut également suivre une approche plus pragmatique et rassembler les packages dans une même image. Chaque conteneur contiendra alors un MSR et les 3 packages.
+Mais on peut également suivre une approche plus pragmatique et rassembler les packages dans une même image. Chaque conteneur contiendra alors un MSR et les 3 packages.  
+
+La construction de l'image de base utilisée est décrite ici: https://github.com/staillansag/msdBase
 
 ##  Scénario de la démo
 
