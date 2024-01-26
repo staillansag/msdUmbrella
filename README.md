@@ -8,6 +8,20 @@ Ce repository "chapeaute" les packages de la démo microservices webMethods:
 Dans une approche microservice, on va chercher à gérer une image pour chaque microservice. Chaque conteneur de microservice tournera sur un MSR dédié.
 Mais on peut également suivre une approche plus pragmatique et rassembler les packages dans une même image. Chaque conteneur contiendra alors un MSR et les 3 packages.
 
+##  Scénario de la démo
+
+Scénario de e-commerce ultra simplifié:
+-   un front-end se connecte à un microservice en backend par le biais d'une API REST pour créer une commande
+-   la requête contient quelques données du client (comme son adresse email), et des informations concernant les produits
+-   on enregistre la commande en base de données Postgres
+-   on émet un message dans une queue qui déclenche l'envoi d'une notification email au client, pour l'information de la prise en compte se sa commande
+
+On a également des fonctionnalités de tests de performance, permettant de mettre en oeuvre l'élasticité.
+
+##  Architecture logique
+
+![Architecture Logique](msdUmbrella/resources/doc/ArchitectureLogique.png)
+
 ##  Setup de l'environnement de développement
 
 Niveau environnement de développement, on peut également choisir d'avoir un MSR par microservice.  Même si le MSR consomme relativement peu de ressources (disons 1 coeur et 1 Go de mémoire), je préfère quand même rassembler tous mes packages sur un même MSR de développement, déployé sur mon poste local et branché au Designer.  
