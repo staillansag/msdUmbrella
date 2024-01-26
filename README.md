@@ -76,7 +76,7 @@ Commande de build Docker: `docker build --build-arg GIT_TOKEN=<git-token> -t <no
 ##  Déploiement manuel du "macroservice" dans Kubernetes
 
 Dans le repertoire resources/kubernetes du repository, on trouve un ensemble de descripteurs Kubernetes.  
-Dans tout ceci, je considère l'UM comme un composant d'infrastructure, qui ne fait pas partie d'une livraison applicative. Les descripteurs de déploiement de l'UM sont ici: `https://github.com/staillansag/wm-config/tree/main/aks/umserver`
+Dans tout ceci, je considère l'UM comme un composant d'infrastructure, qui ne fait pas partie d'une livraison applicative. Les descripteurs de déploiement de l'UM sont ici: https://github.com/staillansag/wm-config/tree/main/aks/umserver
 
 
 ### cm-msd-umbrella.yaml
@@ -134,5 +134,5 @@ Le MSR expose des métriques prometheus sur le endpoint /metrics via le port 555
 L'UM expose ses métriques sur le endpoint /metrics via le port 9200.  
 
 Des dashboard Grafana sont fournis dans resources/monitoring, un pour l'UM et un autre pour le MSR.  
-Les descripteurs de déploiement de Prometheus et Grafana, ainsi que les règles de scrapping sont spécifiées ici: `https://github.com/staillansag/wm-config/tree/main/aks/monitoring`
+Les descripteurs de déploiement de Prometheus et Grafana, ainsi que les règles de scrapping sont spécifiées ici: https://github.com/staillansag/wm-config/tree/main/aks/monitoring
 
