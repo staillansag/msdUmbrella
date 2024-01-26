@@ -20,7 +20,7 @@ On a également des fonctionnalités de tests de performance, permettant de mett
 
 ##  Architecture logique
 
-![Architecture Logique](msdUmbrella/resources/doc/ArchitectureLogique.png)
+![Architecture Logique](resources/doc/ArchitectureLogique.png)
 
 ##  Setup de l'environnement de développement
 
