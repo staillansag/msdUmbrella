@@ -6,12 +6,12 @@ data:
   application.properties: |
     artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionEnabled=true
     artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.datasourceClass=org.postgresql.ds.PGSimpleDataSource
-    artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.databaseName=$env{RDS_DATABASE_NAME}
-    artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.portNumber=$env{RDS_PORT}
-    artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.serverName=$env{RDS_SERVER_NAME}
+    artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.databaseName=$env{POSTGRES_DATABASE_NAME}
+    artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.portNumber=$env{POSTGRES_PORT}
+    artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.serverName=$env{POSTGRES_SERVER_NAME}
     artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.transactionType=LOCAL_TRANSACTION
-    artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.user=$env{RDS_USER_NAME}
-    artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.password=$secret{DB_PASSWORD}
+    artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.user=$env{POSTGRES_USERNAME}
+    artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.password=$secret{POSTGRES_PASSWORD}
     artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionManagerSettings.maximumPoolSize=10
 
     jndi.DEFAULT_IS_JNDI_PROVIDER.providerURL=nsp://umserver-0:9000
@@ -45,10 +45,3 @@ data:
 
     settings.watt.net.default.accept=application/json
     settings.watt.server.ns.lockingMode=none
-
-    user.Administrator.password=manage
-
-    globalvariable.SERVER.value=$env{SERVER}
-
-
-  applicationFile.properties:  |
