@@ -10,7 +10,7 @@ data:
     artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.portNumber=$env{POSTGRES_PORT}
     artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.serverName=$env{POSTGRES_SERVER_NAME}
     artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.transactionType=LOCAL_TRANSACTION
-    artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.user=$env{POSTGRES_USERNAME}
+    artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.user=$secret{POSTGRES_USERNAME}
     artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionSettings.password=$secret{POSTGRES_PASSWORD}
     artConnection.msdOrders.msdOrders.jdbc.msdOrders_jdbc.connectionManagerSettings.maximumPoolSize=10
 
